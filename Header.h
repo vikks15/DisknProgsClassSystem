@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "dbtable.h"
 
 using namespace std;
@@ -17,78 +17,50 @@ public:
 
 class Disk{
 private:
-	string name;
+
 	int totalSize;
 	int curSize;
 	DBtable prog; //list of programms on disk
 public:
-
+	string name;
 	Disk(){};
-	Disk(string n, int s)//constructor from name and size
+	Disk(string& n, int& s1, int& s2)//constructor from name and size
 	{
 		name=n;
-		totalSize=s;
-		curSize=s;
+		totalSize=s1;
+		curSize=s2;
 	};
 	~Disk(){};
 
 	void getProgList(DBTableSet& mySet)
 	{
 		string name, filename;
-		cout<<"Введите имя диска: ";
-		getline(cin,name);
+		filename=(*this).name+"Prog.txt";
+		mySet[filename].printTable();
 
-		vector <Row> check = mySet["DisksInfo.txt"].selfRows("1.Name",getValue("String",name));
-
-		if(check.size()==0)
-		{
-			cout<<"Такого диска нет в базе"<<endl;
-			return;
-		}
-		else
-		{
-			filename=name+"Prog.txt";
-			mySet[filename].printTable();
-		}
 	}
 
 	void addDisk(DBTableSet& mySet)
 	{
 		string name, filename;
-		int size;
-		cout<<"Введите имя диска: ";
-		getline(cin,name);
+		filename = (*this).name+"Prog.txt";
+		ofstream fout1 (filename); //make disk file
+		fout1<<"1.Name|String|2.Size|Int";
+		fout1.close();
 
-		vector <Row> check = mySet["DisksInfo.txt"].selfRows("1.Name",getValue("String",name));
+		ofstream fout2 ("DisksInfo.txt", ios_base::app);
+		fout2<<endl<<(*this).name<<"|"<<totalSize<<"|"<<curSize;
+		fout2.close();
 
-		if(check.size()!=0)
-		{
-			cout<<"Такой диск уже существует. Введите другое имя диска."<<endl;
-			return;
-		}
-		else
-		{
-			cout<<"Введите размер диска: ";
-			cin>>size;
+		ofstream fout3 ("disks.txt", ios_base::app);
+		fout3<<endl<<filename;
+		fout3.close();
 
-			filename=name+"Prog.txt";
-			ofstream fout1 (filename); //make disk file
-			fout1<<"1.Name|String|2.Size|Int";
-			fout1.close();
+		mySet.dbset.erase("DisksInfo.txt");
+		mySet.addToSet("DisksInfo.txt");
+		mySet.addToSet(filename);
 
-			ofstream fout2 ("DisksInfo.txt", ios_base::app);
-			fout2<<endl<<name<<"|"<<size<<"|"<<size;
-			fout2.close();
 
-			ofstream fout3 ("disks.txt", ios_base::app);
-			fout3<<endl<<filename;
-			fout3.close();
-
-			mySet.dbset.erase("DisksInfo.txt");
-			mySet.addToSet("DisksInfo.txt");
-			mySet.addToSet(filename);
-
-		}
 	}
 	void recordProg();
 	void delProg();
@@ -98,19 +70,30 @@ public:
 int menu1()
 {
 	int number = 0;
-	cout<<"1 - Вывести базу данных"<<endl;
-	cout<<"2 - Вывести список дисков"<<endl;
-	cout<<"3 - Вывести список программных продуктов на диске"<<endl;
-	cout<<"4 - Объединить 2 диска"<<endl;
-	cout<<"5 - Очистить диск"<<endl;
-	cout<<"6 - Удалить программный продукт"<<endl;
-	cout<<"7 - Добавить новый программный продукт"<<endl;
-	cout<<"8 - Добавить новый диск"<<endl;
-	cout<<"9 - Информация о программных продуктах"<<endl;
-	cout<<"10 - Выйти"<<endl;
+	cout<<"1 - Р’С‹РІРµСЃС‚Рё Р±Р°Р·Сѓ РґР°РЅРЅС‹С…"<<endl;
+	cout<<"2 - Р’С‹РІРµСЃС‚Рё СЃРїРёСЃРѕРє РґРёСЃРєРѕРІ"<<endl;
+	cout<<"3 - Р’С‹РІРµСЃС‚Рё СЃРїРёСЃРѕРє РїСЂРѕРіСЂР°РјРјРЅС‹С… РїСЂРѕРґСѓРєС‚РѕРІ РЅР° РґРёСЃРєРµ"<<endl;
+	cout<<"4 - РћР±СЉРµРґРёРЅРёС‚СЊ 2 РґРёСЃРєР°"<<endl;
+	cout<<"5 - РћС‡РёСЃС‚РёС‚СЊ РґРёСЃРє"<<endl;
+	cout<<"6 - РЈРґР°Р»РёС‚СЊ РїСЂРѕРіСЂР°РјРјРЅС‹Р№ РїСЂРѕРґСѓРєС‚"<<endl;
+	cout<<"7 - Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ РїСЂРѕРіСЂР°РјРјРЅС‹Р№ РїСЂРѕРґСѓРєС‚"<<endl;
+	cout<<"8 - Р”РѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Р№ РґРёСЃРє"<<endl;
+	cout<<"9 - РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїСЂРѕРіСЂР°РјРјРЅС‹С… РїСЂРѕРґСѓРєС‚Р°С…"<<endl;
+	cout<<"10 - Р’С‹Р№С‚Рё"<<endl;
 	cin>>number;
 
 	cin.clear();
 	cin.ignore(256,'\n');
 	return number;
+}
+
+int diskSearch(string& nam, vector <Disk>& d)
+{
+
+	for(int i = 0; i<d.size(); i++)
+	{
+		if(d[i].name==nam) return i;
+	}
+
+	return -1;
 }
