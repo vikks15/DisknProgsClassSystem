@@ -5,14 +5,53 @@ using namespace std;
 
 class ProgProducts{
 private:
-	string name;
+
 	int size;
 public:
-	string get_paramName();
-	string set_paramName();
+	string name;
+	ProgProducts(string& n, int& s1)
+	{
+		name = n;
+		size = s1;
+	};
+	~ProgProducts(){};
 
-	int get_paramSize();
-	int set_paramSize();
+	void del(DBTableSet& set, vector <ProgProducts>& vect)
+	{
+		string dname, pname, filename;
+		int num=-1;
+		cout<<"Введите имя диска: ";
+		getline(cin,dname);
+		progsToVector(set,vect,dname);
+		filename=dname+"Prog.txt";
+
+		cout<<"Введите имя удаляеммой программы: ";
+		getline(cin,pname);
+		for(int i = 0; i<vect.size(); i++)
+		{
+			if(vect[i].name == pname) num=i;
+		}
+
+		if(num==-1)
+		{
+			cout<<"Такой программы нет на диске.";
+			return;
+		}
+
+		vect.erase(vect.begin()+num);
+
+		ofstream fout;
+		fout.open(filename);
+		fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
+
+		//fout.open(filename, ios_base::app);
+		for(int i = 0; i<vect.size(); i++)
+		{
+			fout<<endl<<vect[i].name<<"|"<<vect[i].size;
+		}
+		fout.close();
+
+	}
 };
 
 class Disk{
@@ -39,9 +78,9 @@ public:
 		mySet[filename].printTable();
 	}
 
-	void addToDisk(vector <Disk>& vect)
+	void addToDisk(vector <Disk>& vect, const string& filename)
 	{
-		ofstream fout("DisksInfo.txt", ios_base::app);
+		ofstream fout(filename, ios_base::app);
 		for(int i = 0; i<vect.size(); i++)
 		{
 			fout<<endl<<vect[i].name<<"|"<<vect[i].totalSize<<"|"<<vect[i].curSize;
@@ -69,6 +108,7 @@ public:
 			return;
 		}
 		remove(filename.c_str());
+		set.dbset.erase(filename);
 
 	}
 	void addNewDisk(DBTableSet& mySet)
@@ -126,4 +166,16 @@ int diskSearch(string& nam, vector <Disk>& d)
 		if(d[i].name==nam) return i;
 	}
 	return -1;
+}
+
+void progsToVector(DBTableSet& set, vector <ProgProducts>& vect, string& dname)
+{
+	int s;
+	string filename=dname+"Prog.txt";
+	for(int i = 0; i<set[filename].data.size(); i++)
+	{
+		dname = (char*)set[filename].data[i]["1.Name"];
+		s = *(int*)set[filename].data[i]["2.Size"];
+		vect.push_back(ProgProducts(dname,s));
+	}
 }

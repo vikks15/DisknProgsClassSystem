@@ -12,7 +12,7 @@ int main()
 	string name;
 	int size;
 	int s, curS;
-	//----------------------add disks to vector---------------------------------
+	//----------------------add disks to vector--------------------------------
 	for(int i = 0; i<set["DisksInfo.txt"].data.size(); i++)
 	{
 		name = (char*)set["DisksInfo.txt"].data[i]["1.Name"];
@@ -88,23 +88,36 @@ int main()
 				fout.open("DisksInfo.txt");
 				fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
 				fout.close();
-				myDisks[find-1].addToDisk(myDisks); //rewrite disks info
+				myDisks[find-1].addToDisk(myDisks,"DisksInfo.txt"); //rewrite disks info
 
 				fout.open("disks.txt");
+				fout<<"DisksInfo.txt"<<endl;
 				for(int i = 0; i<myDisks.size(); i++)
 				{
 					filename = myDisks[i].name+"Prog.txt";
 					fout<<filename<<endl;
 				}
+				fout.close();
 				break;
 			}
+
 		case 8:
+			{
+				string name;
+				cout<<"Введите имя диска: ";
+				getline(cin,name);
+				progsToVector(set,diskProgs,name);
+				/*cout<<diskProgs.size();
+				cout<<diskProgs[2].name;*/
+				break;
+			}
+		case 9:
 			{
 				cout<<"Введите имя диска: ";
 				getline(cin,name);
 
 				int find = diskSearch(name,myDisks);
-				if(find!=-1) 
+				if(find!=-1)
 				{
 					cout<<"Такой диск уже существует. Введите другое имя диска."<<endl;
 					break;
