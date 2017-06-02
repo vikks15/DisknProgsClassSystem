@@ -38,7 +38,6 @@ int main()
 			}
 		case 3:
 			{
-
 				cout<<"Введите имя диска: ";
 				getline(cin,name);
 				int find = diskSearch(name,myDisks);
@@ -50,7 +49,7 @@ int main()
 				myDisks[find].getProgList(set);
 				break;
 			}
-		case 5:
+		case 4:
 			{
 				cout<<"Введите имя диска: ";
 				getline(cin,name);
@@ -67,10 +66,10 @@ int main()
 				fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
 				fout.close();
 
-				myDisks[find].addToDisk(myDisks); //change info of free space
+				myDisks[find].addToDisk(myDisks, "DisksInfo.txt"); //change info of free space
 				break;
 			}
-		case 6:
+		case 5:
 			{
 				string filename;
 				cout<<"Введите имя диска: ";
@@ -101,17 +100,41 @@ int main()
 				break;
 			}
 
-		case 8:
+		case 6:
 			{
-				string name;
+				string dname, pname, filename;
+				int num=-1;
 				cout<<"Введите имя диска: ";
-				getline(cin,name);
-				progsToVector(set,diskProgs,name);
-				/*cout<<diskProgs.size();
-				cout<<diskProgs[2].name;*/
+				getline(cin,dname);
+				filename=dname+"Prog.txt";
+
+				//--------------progsToVector-----------------
+				int s;
+				for(int i = 0; i<set[filename].data.size(); i++)
+				{
+					pname = (char*)set[filename].data[i]["1.Name"];
+					s = *(int*)set[filename].data[i]["2.Size"];
+					diskProgs.push_back(ProgProducts(pname,s));
+				}
+				//-------------------------------------------------
+
+				cout<<"Введите имя удаляеммой программы: ";
+				getline(cin,pname);
+				for(int i = 0; i<diskProgs.size(); i++)
+				{
+					if(diskProgs[i].name == pname) num=i;
+				}
+
+				if(num==-1)
+				{
+					cout<<"Такой программы нет на диске.";
+					break;
+				}
+
+				diskProgs[num].del(set,diskProgs,num,dname);
 				break;
 			}
-		case 9:
+		case 7:
 			{
 				cout<<"Введите имя диска: ";
 				getline(cin,name);
@@ -133,6 +156,7 @@ int main()
 
 				break;
 			}
+		case 8: {return 0;}
 		}
 
 		system("pause");

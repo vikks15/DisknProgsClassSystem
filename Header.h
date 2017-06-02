@@ -3,12 +3,14 @@
 
 using namespace std;
 
+
 class ProgProducts{
 private:
 
 	int size;
 public:
 	string name;
+	ProgProducts(){};
 	ProgProducts(string& n, int& s1)
 	{
 		name = n;
@@ -16,41 +18,25 @@ public:
 	};
 	~ProgProducts(){};
 
-	void del(DBTableSet& set, vector <ProgProducts>& vect)
+	void del(DBTableSet& set, vector <ProgProducts>& vect, int& num, string& dname)
 	{
-		string dname, pname, filename;
-		int num=-1;
-		cout<<"Введите имя диска: ";
-		getline(cin,dname);
-		progsToVector(set,vect,dname);
+		string pname, filename;
 		filename=dname+"Prog.txt";
-
-		cout<<"Введите имя удаляеммой программы: ";
-		getline(cin,pname);
-		for(int i = 0; i<vect.size(); i++)
-		{
-			if(vect[i].name == pname) num=i;
-		}
-
-		if(num==-1)
-		{
-			cout<<"Такой программы нет на диске.";
-			return;
-		}
 
 		vect.erase(vect.begin()+num);
 
 		ofstream fout;
 		fout.open(filename);
-		fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
+		fout<<"1.Name|String|2.Size|Int";
 
-		//fout.open(filename, ios_base::app);
 		for(int i = 0; i<vect.size(); i++)
 		{
 			fout<<endl<<vect[i].name<<"|"<<vect[i].size;
 		}
 		fout.close();
 
+		set.dbset.erase(filename);
+		set.addToSet(filename);
 	}
 };
 
@@ -134,7 +120,6 @@ public:
 		mySet.addToSet(filename);
 	}
 	void recordProg();
-	void delProg();
 	//void getProgByName();
 };
 
@@ -144,14 +129,14 @@ int menu1()
 	cout<<"1 - Вывести базу данных"<<endl;
 	cout<<"2 - Вывести список дисков и информацию о них"<<endl;
 	cout<<"3 - Вывести список программных продуктов на диске"<<endl;
-	cout<<"4 - Объединить 2 диска"<<endl;
-	cout<<"5 - Очистить диск"<<endl;
-	cout<<"6 - Удалить диск"<<endl;
-	cout<<"7 - Удалить программный продукт"<<endl;
-	cout<<"8 - Добавить новый программный продукт"<<endl;
-	cout<<"9 - Добавить новый диск"<<endl;
-	cout<<"10 - Информация о программных продуктах"<<endl;
-	cout<<"11 - Выйти"<<endl;
+	//cout<<"4 - Объединить 2 диска"<<endl;
+	cout<<"4 - Очистить диск"<<endl;
+	cout<<"5 - Удалить диск"<<endl;
+	cout<<"6 - Удалить программный продукт"<<endl;
+	//cout<<"7 - Добавить новый программный продукт"<<endl;
+	cout<<"7 - Добавить новый диск"<<endl;
+	//cout<<"9 - Информация о программных продуктах"<<endl;
+	cout<<"8 - Выйти"<<endl;
 	cin>>number;
 
 	cin.clear();
@@ -166,16 +151,4 @@ int diskSearch(string& nam, vector <Disk>& d)
 		if(d[i].name==nam) return i;
 	}
 	return -1;
-}
-
-void progsToVector(DBTableSet& set, vector <ProgProducts>& vect, string& dname)
-{
-	int s;
-	string filename=dname+"Prog.txt";
-	for(int i = 0; i<set[filename].data.size(); i++)
-	{
-		dname = (char*)set[filename].data[i]["1.Name"];
-		s = *(int*)set[filename].data[i]["2.Size"];
-		vect.push_back(ProgProducts(dname,s));
-	}
 }
