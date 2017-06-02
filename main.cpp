@@ -21,7 +21,6 @@ int main()
 		myDisks.push_back(Disk(name,s,curS));
 	}
 	//-------------------------------------------------------------------------
-	cout<<"nameee "<<myDisks[1].name;
 
 	while(true)
 	{
@@ -34,9 +33,8 @@ int main()
 			}
 		case 2:
 			{
-				for(int i = 0; i < set["DisksInfo.txt"].data.size(); i++) cout<<(char*)set["DisksInfo.txt"].data[i]["1.Name"]<<endl;
+				set["DisksInfo.txt"].printTable();
 				break;
-
 			}
 		case 3:
 			{
@@ -50,6 +48,54 @@ int main()
 					break;
 				}
 				myDisks[find].getProgList(set);
+				break;
+			}
+		case 5:
+			{
+				cout<<"Введите имя диска: ";
+				getline(cin,name);
+				int find = diskSearch(name,myDisks);
+				if(find==-1) 
+				{
+					cout<<"Такого диска нет в базе";
+					break;
+				}
+
+				myDisks[find].clean(set);//clean in file and in vector
+
+				ofstream fout("DisksInfo.txt");
+				fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
+				fout.close();
+
+				myDisks[find].addToDisk(myDisks); //change info of free space
+				break;
+			}
+		case 6:
+			{
+				string filename;
+				cout<<"Введите имя диска: ";
+				getline(cin,name);
+				int find = diskSearch(name,myDisks);
+				if(find==-1) 
+				{
+					cout<<"Такого диска нет в базе";
+					break;
+				}
+				myDisks[find].del(set);
+				myDisks.erase(myDisks.begin()+find); //delete from vector
+
+				ofstream fout;
+				fout.open("DisksInfo.txt");
+				fout<<"1.Name|String|2.TotalSize|Int|3.CurSize|Int";
+				fout.close();
+				myDisks[find-1].addToDisk(myDisks); //rewrite disks info
+
+				fout.open("disks.txt");
+				for(int i = 0; i<myDisks.size(); i++)
+				{
+					filename = myDisks[i].name+"Prog.txt";
+					fout<<filename<<endl;
+				}
 				break;
 			}
 		case 8:
@@ -67,7 +113,7 @@ int main()
 				cout<<"Введите размер диска (в Гб): ";
 				cin>>size;
 				Disk newDisk(name,size,size);
-				newDisk.addDisk(set);
+				newDisk.addNewDisk(set);
 				myDisks.push_back(newDisk);
 
 				cout<<"try "<<newDisk.name<<"=="<<myDisks[2].name;
